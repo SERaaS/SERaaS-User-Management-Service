@@ -4,14 +4,14 @@ var server = require('../../../app');
 
 describe('controllers', function() {
 
-  describe('hello_world', function() {
+  describe('authentication', function() {
 
-    describe('GET /hello', function() {
+    describe('GET /authentication', function() {
 
       it('should return a default string', function(done) {
 
         request(server)
-          .get('/hello')
+          .get('/authentication')
           .set('Accept', 'application/json')
           .expect('Content-Type', /json/)
           .expect(200)
@@ -27,7 +27,7 @@ describe('controllers', function() {
       it('should accept a name parameter', function(done) {
 
         request(server)
-          .get('/hello')
+          .get('/authentication')
           .query({ name: 'Scott'})
           .set('Accept', 'application/json')
           .expect('Content-Type', /json/)
