@@ -21,3 +21,12 @@ SwaggerExpress.create(config, function(err, swaggerExpress) {
     console.log('try this:\ncurl http://127.0.0.1:' + port + '/authentication?name=Scott');
   }
 });
+
+// Using Mongoose to blackbox the MongoDB connectivity
+const secretURI = require('./mongodb-connectivity-uri');
+const mongoose = require('mongoose');
+mongoose.connect(secretURI, { useNewUrlParser: true });
+
+const db = mongoose.connection;
+db.on('error', (err) => console.log(`Connection error:\n${err}`));
+db.once('open', () => console.log(`Connected to ${db.name}.`));
