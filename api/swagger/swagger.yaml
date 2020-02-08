@@ -17,33 +17,6 @@ consumes:
 # format of the responses to the client (Accepts)
 produces:
   - application/json
-paths:
-  /authentication:
-    # binds a127 app logic to a route
-    x-swagger-router-controller: authentication
-    get:
-      description: Returns 'Hello' to the caller
-      # used as the method name of the controller
-      operationId: register
-      parameters:
-        - name: name
-          in: query
-          description: The name of the person to whom to say hello
-          required: false
-          type: string
-      responses:
-        "200":
-          description: Success
-          schema:
-            # a pointer to a definition
-            $ref: "#/definitions/HelloWorldResponse"
-        # responses may fall through to errors
-        default:
-          description: Error
-          schema:
-            $ref: "#/definitions/ErrorResponse"
-  /swagger:
-    x-swagger-pipe: swagger_raw
 # complex objects have schema definitions
 definitions:
   HelloWorldResponse:
@@ -58,3 +31,78 @@ definitions:
     properties:
       message:
         type: string
+  UserAuthenticationResponse:
+    required:
+      - _id
+      - name
+      - dateCreated
+      - lastUsed
+    properties:
+      _id:
+        type: string
+      name:
+        type: string
+      dateCreated:
+        type: string
+        format: date-time
+      lastUsed:
+        type: string
+        format: date-time
+  UserAuthenticationInput:
+    required:
+      - username
+      - password
+    properties:
+      username:
+        type: string
+      password:
+        type: string
+        format: password
+paths:
+  # /authentication:
+    # binds a127 app logic to a route
+    # x-swagger-router-controller: authentication
+    # get:
+      # description: Returns 'Hello' to the caller
+      # used as the method name of the controller
+      # operationId: register
+      # parameters:
+      #   - name: name
+      #     in: query
+      #     description: The name of the person to whom to say hello
+      #     required: false
+      #     type: string
+      # responses:
+        # "200":
+          # description: Success
+          # schema:
+            # a pointer to a definition
+            # $ref: "#/definitions/HelloWorldResponse"
+        # responses may fall through to errors
+        # default:
+        #   description: Error
+        #   schema:
+        #     $ref: "#/definitions/ErrorResponse"
+  /swagger:
+    x-swagger-pipe: swagger_raw
+  /authentication/register:
+    x-swagger-router-controller: authentication
+    post:
+      description: Registers a user account based on the given credentials
+      operationId: register
+      parameters:
+        - in: body
+          name: user
+          description: The username and password of the account to register
+          required: true
+          schema:
+            $ref: "#/definitions/UserAuthenticationInput"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/UserAuthenticationResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
