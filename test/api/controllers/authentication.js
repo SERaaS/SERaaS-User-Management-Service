@@ -1,11 +1,12 @@
-var should = require('should');
-var request = require('supertest');
-var server = require('../../../app');
+const should = require('should'),
+    request = require('supertest'),
+    server = require('../../../app');
 
 describe('controllers', function() {
 
   describe('authentication', function() {
 
+    /*
     describe('GET /authentication', function() {
 
       it('should return a default string', function(done) {
@@ -40,32 +41,107 @@ describe('controllers', function() {
             done();
           });
       });
-
     });
+    */
 
     describe('POST /authentication/register', function() {
+
+      const _userCredentials = { username: 'SERaaS', password: 'MyPassword' };
+
+      afterEach(function() {
+        // TODO - Remove database contents after each query
+      })
+
       it('should be able to register a user account from username and password input', function(done) {
-        done();
+        request(server)
+          .post('/authentication/register')
+          .send(_userCredentials)
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end(function(err, res) {
+            if (err) { done(new Error(err)); }
+            else { done(); }
+          });
+      });
+
+      it('should give error if username already being used', function(done) {
+        request(server)
+          .post('/authentication/register')
+          .send(_userCredentials)
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end(function(err, res) {
+
+            request(server)
+            .post('/authentication/register')
+            .send(_userCredentials)
+            .expect('Content-Type', /json/)
+            .expect(409)
+            .end(function(err, res) {
+              if (err) { done(new Error(err)); }
+              else { done(); }
+            });
+          });
       });
 
       it('should give error if username is just empty string', function(done) {
-        done();
+        request(server)
+          .post('/authentication/register')
+          .send({ username: '', password: _userCredentials.password })
+          .expect('Content-Type', /json/)
+          .expect(400)
+          .end(function(err, res) {
+            if (err) { done(new Error(err)); }
+            else { done(); }
+          });
       });
 
       it('should give error if no username was provided', function(done) {
-        done();
+        request(server)
+          .post('/authentication/register')
+          .send({ password: _userCredentials.password })
+          .expect('Content-Type', /json/)
+          .expect(400)
+          .end(function(err, res) {
+            if (err) { done(new Error(err)); }
+            else { done(); }
+          });
       });
 
       it('should give error if password is less than seven characters', function(done) {
-        done();
+        request(server)
+          .post('/authentication/register')
+          .send({ username: _userCredentials.username, password: 'beep' })
+          .expect('Content-Type', /json/)
+          .expect(400)
+          .end(function(err, res) {
+            if (err) { done(new Error(err)); }
+            else { done(); }
+          });
       });
 
       it('should give error if password is just empty string', function(done) {
-        done();
+        request(server)
+          .post('/authentication/register')
+          .send({ username: _userCredentials.username, password: '' })
+          .expect('Content-Type', /json/)
+          .expect(400)
+          .end(function(err, res) {
+            if (err) { done(new Error(err)); }
+            else { done(); }
+          });
       });
 
       it('should give error if no password was provided', function(done) {
-        done();
+        request(server)
+          .post('/authentication/register')
+          .send({ username: _userCredentials.username })
+          .expect('Content-Type', /json/)
+          .expect(400)
+          .end(function(err, res) {
+            if (err) { done(new Error(err)); }
+            else { done(); }
+          });
       });
     })
 
