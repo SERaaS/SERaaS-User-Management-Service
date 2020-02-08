@@ -84,50 +84,33 @@ function register(req, res) {
     })
 }
 
+function noUserFoundMessage(res) {
+    return res.status(404).send({
+        statusCode: 404,
+        message: 'No user found with credentials.'
+    });
+}
+
 // Authenticates the given user credentials
 function login(req, res) {
     const _user = req.swagger.params.user.value,
         { username, password } = _user;
 
-    // Username string must not be empty
-    if (username === '') {
-        return res.status(400).send({
-            statusCode: 400,
-            message: 'Username cannot be an empty string for registration.'
-        });
-    }
-
-    // Password string must not be empty
-    else if (password === '') {
-        return res.status(400).send({
-            statusCode: 400,
-            message: 'Password cannot be an empty string for registration.'
-        });
-    }
-
-    // Password string must atleast be 7 characters long
-    else if (password.length < 7) {
-        return res.status(400).send({
-            statusCode: 400,
-            message: 'Password must atleast be 7 characters long.'
-        });
+    // Automatically fail if it does not pass the registration requirements by default
+    if (username === '' || password === '' || password.length < 7) {
+        return noUserFoundMessage(res);
     };
 
     return User.findOne({ name: username })
     .then(function(user) {
         if (!user) {
-            return res.status(404).send({
-                statusCode: 404,
-                message: 'No user found with credentials.'
-            });
+            return noUserFoundMessage(res);
         };
 
+        // Compare plaintext with hash to check if it's the equivalent password
         const validPassword = bcrypt.compareSync(password, user.password);
         if (!validPassword) {
-            return res.status(404).send({
-                statusCode: 404,
-                message: 'No user found with credentials.'
-            });
+            return noUserFoundMessage(res);
         };
 
         // Track last used date before outputting
@@ -139,8 +122,6 @@ function login(req, res) {
                 dateCreated: updated.dateCreated,
                 lastUsed: updated.lastUsed
             };
-
-            console.log(result);
     
             res.status(200).send(result);
         })
