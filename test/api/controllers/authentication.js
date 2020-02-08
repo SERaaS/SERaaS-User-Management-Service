@@ -158,6 +158,20 @@ describe('controllers', function() {
       });
     })
 
+    describe('POST /authentication/login', function() {
+
+      it('should be able to authenticate an user account from username and password input', function(done) {
+        done();
+      });
+
+      it('should give error if no username was provided', function(done) {
+        done();
+      });
+
+      it('should give error if no password was provided', function(done) {
+        done();
+      });
+    });
   });
 
 });
