@@ -160,16 +160,73 @@ describe('controllers', function() {
 
     describe('POST /authentication/login', function() {
 
+      const _userCredentials = { username: 'SERaaS2', password: 'MyPassword' };
+      
+      // Add a user account before all of the tests
+      before(function(done) {
+        return request(server)
+        .post('/authentication/register')
+        .send(_userCredentials)
+        .end(function(err, res) {
+          done();
+        });
+      });
+
+      // Remove the user account after all of the tests
+      after(function(done) {
+        return User.deleteOne({ name: _userCredentials.username })
+        .then(function() {
+          done();
+        });
+      });
+
+      // Test cases
       it('should be able to authenticate an user account from username and password input', function(done) {
-        done();
+        request(server)
+          .post('/authentication/login')
+          .send(_userCredentials)
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end(function(err, res) {
+            if (err) { done(new Error(err)); }
+            else { done(); }
+          });
+      });
+
+      it('should give error if no user account from username and password input exists', function() {
+        request(server)
+          .post('/authentication/login')
+          .send({ username: 'beep', password: 'boop' })
+          .expect('Content-Type', /json/)
+          .expect(404)
+          .end(function(err, res) {
+            if (err) { done(new Error(err)); }
+            else { done(); }
+          });
       });
 
       it('should give error if no username was provided', function(done) {
-        done();
+        request(server)
+          .post('/authentication/login')
+          .send({ password: _userCredentials.password })
+          .expect('Content-Type', /json/)
+          .expect(400)
+          .end(function(err, res) {
+            if (err) { done(new Error(err)); }
+            else { done(); }
+          });
       });
 
       it('should give error if no password was provided', function(done) {
-        done();
+        request(server)
+          .post('/authentication/login')
+          .send({ username: _userCredentials.username })
+          .expect('Content-Type', /json/)
+          .expect(400)
+          .end(function(err, res) {
+            if (err) { done(new Error(err)); }
+            else { done(); }
+          });
       });
     });
   });
