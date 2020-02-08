@@ -8,6 +8,7 @@
   "license": "",
   "main": "app.js",
   "dependencies": {
+    "bcrypt": "^3.0.8",
     "express": "^4.12.3",
     "mongoose": "^5.8.7",
     "swagger-express-mw": "^0.1.0"
