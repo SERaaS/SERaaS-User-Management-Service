@@ -43,6 +43,32 @@ describe('controllers', function() {
 
     });
 
+    describe('POST /authentication/register', function() {
+      it('should be able to register a user account from username and password input', function(done) {
+        done();
+      });
+
+      it('should give error if username is just empty string', function(done) {
+        done();
+      });
+
+      it('should give error if no username was provided', function(done) {
+        done();
+      });
+
+      it('should give error if password is less than seven characters', function(done) {
+        done();
+      });
+
+      it('should give error if password is just empty string', function(done) {
+        done();
+      });
+
+      it('should give error if no password was provided', function(done) {
+        done();
+      });
+    })
+
   });
 
 });
