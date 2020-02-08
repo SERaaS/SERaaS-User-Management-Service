@@ -106,3 +106,24 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /authentication/login:
+    x-swagger-router-controller: authentication
+    post:
+      description: Authenticates the given user credentials
+      operationId: login
+      parameters:
+        - in: body
+          name: user
+          description: The username and password of the account to authenticate
+          required: true
+          schema:
+            $ref: "#/definitions/UserAuthenticationInput"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/UserAuthenticationResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
