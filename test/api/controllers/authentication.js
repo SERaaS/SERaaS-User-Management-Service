@@ -1,6 +1,7 @@
 const should = require('should'),
     request = require('supertest'),
-    server = require('../../../app');
+    server = require('../../../app'),
+    User = require('../../../api/models/User');
 
 describe('controllers', function() {
 
@@ -48,10 +49,22 @@ describe('controllers', function() {
 
       const _userCredentials = { username: 'SERaaS', password: 'MyPassword' };
 
-      afterEach(function() {
-        // TODO - Remove database contents after each query
+      // Remove database contents after each query
+      before(function(done) {
+        return User.deleteOne({ name: _userCredentials.username })
+        .then(function() {
+          done();
+        })
       })
 
+      afterEach(function(done) {
+        return User.deleteOne({ name: _userCredentials.username })
+        .then(function() {
+          done();
+        })
+      })
+
+      // Test cases
       it('should be able to register a user account from username and password input', function(done) {
         request(server)
           .post('/authentication/register')
