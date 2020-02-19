@@ -4,14 +4,14 @@ const mongoose = require('mongoose'),
 // Timestamp query object, stores data relating to a single API call from a user
 const timestampSchema = Schema(
     {
-        userId: { type: mongoose.Types.ObjectId, default: '' },
-        fileName: { type: String, default: '' },
+        userId: { type: mongoose.SchemaTypes.ObjectId, required: true },
+        fileName: { type: String, required: true },
         
         // Query date
         dateCreated: { type: Date, default: new Date() },
 
         // Parameters of the API endpoint used
-        paramEmotionsAvailable: [{ type: String, default: '' }],
+        paramEmotionsAvailable: [{ type: String, default: 'all' }],
         paramPeriodicQuery: { type: Number, default: -1 },
 
         // Resulting output
