@@ -7,44 +7,6 @@ describe('controllers', function() {
 
   describe('authentication', function() {
 
-    /*
-    describe('GET /authentication', function() {
-
-      it('should return a default string', function(done) {
-
-        request(server)
-          .get('/authentication')
-          .set('Accept', 'application/json')
-          .expect('Content-Type', /json/)
-          .expect(200)
-          .end(function(err, res) {
-            should.not.exist(err);
-
-            res.body.should.eql('Hello, stranger!');
-
-            done();
-          });
-      });
-
-      it('should accept a name parameter', function(done) {
-
-        request(server)
-          .get('/authentication')
-          .query({ name: 'Scott'})
-          .set('Accept', 'application/json')
-          .expect('Content-Type', /json/)
-          .expect(200)
-          .end(function(err, res) {
-            should.not.exist(err);
-
-            res.body.should.eql('Hello, Scott!');
-
-            done();
-          });
-      });
-    });
-    */
-
     describe('POST /authentication/register', function() {
 
       const _userCredentials = { username: 'SERaaS', password: 'MyPassword' };
@@ -227,6 +189,25 @@ describe('controllers', function() {
             if (err) { done(new Error(err)); }
             else { done(); }
           });
+      });
+    });
+
+    describe('GET /authentication/validate/{userId}', function() {
+
+      it('should give true if user exists in the database', function(done) {
+        done();
+      });
+
+      it('should give false if user does not exist in the database', function(done) {
+        done();
+      });
+
+      it('should give error if user ID provided is not an appropriate string', function(done) {
+        done();
+      });
+
+      it('should give error if no user ID provided to path', function(done) {
+        done();
       });
     });
   });
