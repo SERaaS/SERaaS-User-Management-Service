@@ -66,6 +66,53 @@ definitions:
     properties:
       userExists:
         type: boolean
+  EmotionStatisticObject:
+    required:
+      - emotion
+      - probability
+    properties:
+      emotion:
+        type: string
+      probability:
+        type: number
+  SERaaSQueryInput:
+    required:
+      - fileName
+      - output
+    properties:
+      fileName:
+        type: string
+      paramEmotionsAvailable:
+        type: array
+        items:
+          type: string
+      paramPeriodicQuery:
+        type: number
+      output:
+        type: array
+        items:
+          $ref: "#/definitions/EmotionStatisticObject"
+  SERaaSQueryOutput:
+    required:
+      - userId
+      - fileName
+      - dateCreated
+      - paramEmotionsAvailable
+      - paramPeriodicQuery
+    properties:
+      userId:
+        type: string
+      fileName:
+        type: string
+      dateCreated:
+        type: string
+        format: date-time
+      paramEmotionsAvailable:
+        type: array
+        items:
+          type: string
+      paramPeriodicQuery:
+        type: number
 paths:
   /swagger:
     x-swagger-pipe: swagger_raw
@@ -127,6 +174,32 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/UserValidationResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /authentication/data/{userId}:
+    x-swagger-router-controller: query-timestamp
+    post:
+      description: Send SERaaS API Query data upon usage and associate it with the given user
+      operationId: sendTimestamp
+      parameters:
+        - in: path
+          name: userId
+          description: The user ID of the user to associate data with
+          required: true
+          type: string
+        - in: body
+          name: data
+          description: The SERaaS Query data to be stored to the user
+          required: true
+          schema:
+            $ref: "#/definitions/SERaaSQueryInput"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/SERaaSQueryOutput"
         default:
           description: Error
           schema:
