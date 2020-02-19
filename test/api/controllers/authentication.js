@@ -1,7 +1,10 @@
 const should = require('should'),
     request = require('supertest'),
     server = require('../../../app'),
-    User = require('../../../api/models/User');
+    User = require('../../../api/models/User'),
+
+    // Used to construct a random ObjectID to validate user ID related API endpoints
+    ObjectId = require('mongoose').Types.ObjectId
 
 describe('controllers', function() {
 
@@ -194,20 +197,77 @@ describe('controllers', function() {
 
     describe('GET /authentication/validate/{userId}', function() {
 
+      const _userCredentials = { username: 'SERaaS3', password: 'MyPassword' };
+      
+      // Storing the user ID of the created user to test the endpoint
+      let _userId = '';
+      
+      // Add a user account before all of the tests
+      before(function(done) {
+        return request(server)
+        .post('/authentication/register')
+        .send(_userCredentials)
+        .end(function(err, res) {
+          _userId = res.body._id;
+          done();
+        });
+      });
+
+      // Remove the user account after all of the tests
+      after(function(done) {
+        return User.deleteOne({ name: _userCredentials.username })
+        .then(function() {
+          done();
+        });
+      });
+
       it('should give true if user exists in the database', function(done) {
-        done();
+        request(server)
+          .get(`/authentication/validate/${_userId}`)
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end(function(err, res) {
+            if (err) { done(new Error(err)); }
+            else {
+              res.body.userExists.should.equal(true);
+              done();
+            }
+          });
       });
 
       it('should give false if user does not exist in the database', function(done) {
-        done();
+        request(server)
+          .get(`/authentication/validate/${new ObjectId()}`)
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end(function(err, res) {
+            if (err) { done(new Error(err)); }
+            else {
+              res.body.userExists.should.equal(false);
+              done();
+            }
+          });
       });
 
       it('should give error if user ID provided is not an appropriate string', function(done) {
-        done();
+        request(server)
+          .get(`/authentication/validate/kyllingen`)
+          .expect('Content-Type', /json/)
+          .expect(400)
+          .end(function(err, res) {
+            if (err) { done(new Error(err)); }
+            else { done(); }
+          });
       });
 
       it('should give error if no user ID provided to path', function(done) {
-        done();
+        request(server)
+          .get(`/authentication/validate/`)
+          .expect(404)
+          .end(function(err, res) {
+            if (err) { done(new Error(err)); }
+            else { done(); }
+          });
       });
     });
   });
