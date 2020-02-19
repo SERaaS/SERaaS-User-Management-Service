@@ -4,7 +4,8 @@
 
 const util = require('util'),
     bcrypt = require('bcrypt'),
-    User = require('../models/User');
+    User = require('../models/User'),
+    isValidObjectId = require('mongoose').Types.ObjectId.isValid
 
 // Registers a user account with the given account credentials
 function register(req, res) {
@@ -128,7 +129,31 @@ function login(req, res) {
     });
 }
 
+// Checks if the given user id is associated with a registered account
+function validateUserId(req, res) {
+    const _userId = req.swagger.params.userId.value;
+
+    if (!isValidObjectId(_userId)) {
+        return res.status(400).send({
+            errorCode: 400,
+            message: 'Given user ID must be a valid id string.'
+        });
+    };
+
+    return User.findById(_userId)
+    .then(function(user) {
+        res.status(200).send({ userExists: user != null });
+    })
+    .catch(function(err) {
+        res.status(400).send({
+            errorCode: 400,
+            message: err
+        });
+    });
+};
+
 module.exports = {
     register: register,
-    login: login
+    login: login,
+    validateUserId: validateUserId
 }
