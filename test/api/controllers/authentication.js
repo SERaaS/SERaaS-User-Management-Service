@@ -270,6 +270,40 @@ describe('controllers', function() {
           });
       });
     });
+
+    describe('POST /authentication/data/{userId}', function() {
+      it('should be able to send SERaaS API query data if user exists', function(done) {
+        done();
+      });
+
+      it('should be able to send SERaaS API query data without emotions availability data', function(done) {
+        done();
+      });
+
+      it('should be able to send SERaaS API query data without periodic query data', function(done) {
+        done();
+      });
+
+      it('should give error if no file name given in input', function(done) {
+        done();
+      });
+
+      it('should give error if no resulting output value given in input', function(done) {
+        done();
+      });
+
+      it('should give error if no user exists with given user ID', function(done) {
+        done();
+      });
+
+      it('should give error if given user ID is invalid string', function(done) {
+        done();
+      });
+
+      it('should give error if no user ID given', function(done) {
+        done();
+      });
+    });
   });
 
 });
