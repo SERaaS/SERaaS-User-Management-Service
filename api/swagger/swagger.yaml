@@ -226,3 +226,30 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /authentication/data/{userId}/{queryId}:
+    x-swagger-router-controller: query-timestamp
+    get:
+      description: |
+        Loads all the data related to the given SERaaS API 
+        Query associated with the given user
+      operationId: loadTimestamp
+      parameters:
+        - in: path
+          name: userId
+          description: The user ID of the user to associate data with
+          required: true
+          type: string
+        - in: path
+          name: queryId
+          description: The ID of the SERaaS Query Timestamp to load
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/SERaaSQueryOutput"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
