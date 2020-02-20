@@ -433,6 +433,25 @@ describe('controllers', function() {
           });
       });
     });
+
+    describe('GET /authentication/data/{userId}', function() {
+
+      it('should be able to list all of the SERaaS API queries for a user', function(done) {
+        done();
+      });
+
+      it('should give error if no user exists with given user ID', function(done) {
+        done();
+      });
+
+      it('should give error if given user ID is invalid string', function(done) {
+        done();
+      });
+
+      it('should give error if no user ID given', function(done) {
+        done();
+      });
+    });
   });
 
 });
