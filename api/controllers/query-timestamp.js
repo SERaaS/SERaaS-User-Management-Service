@@ -74,6 +74,7 @@ function sendTimestamp(req, res) {
 
             // Wrap the resulting timestamp object, do not show output variable as it may be a large load
             const result = {
+                _id: saved._id,
                 userId: _userId,
                 fileName: saved.fileName,
                 dateCreated: saved.dateCreated,
@@ -143,7 +144,66 @@ function listTimestamps(req, res) {
     })
 };
 
+// Load a SERaaS Query based on its ID for the given user
+function loadTimestamp(req, res) {
+    const _userId = req.swagger.params.userId.value,
+        _queryId = req.swagger.params.queryId.value;
+
+    // User ID must be a valid one before performing the other expensive operations
+    if (!ObjectId.isValid(_userId)) {
+        return res.status(400).send({
+            errorCode: 400,
+            message: 'Given user ID must be a valid id string.'
+        });
+    }
+
+    // Query ID must also be valid
+    else if (!ObjectId.isValid(_queryId)) {
+        return res.status(400).send({
+            errorCode: 400,
+            message: 'Given query ID must be a valid id string.'
+        });
+    };
+
+    // Ensuring the given user ID corresponds to a user
+    return User.findById(_userId)
+    .then(function(user) {
+
+        if (!user) {
+            return res.status(404).send({
+                errorCode: 404,
+                message: 'Given user ID does not associate with any user in the database.'
+            });
+        };
+
+        // Now load the given timestamp if it exists
+        return Timestamp.findById(_queryId, { __v: 0 })
+        .then(function(timestamp) {
+
+            // Error if no timestamp exists
+            if (!timestamp) {
+                return res.status(404).send({
+                    errorCode: 404,
+                    message: 'Given query ID does not associate with any SERaaS API Query in the database.'
+                }); 
+            };
+
+            res.status(200).send(timestamp);
+        });
+    })
+    .catch(function(err) {
+        // Debug error if caused
+        console.log(err);
+
+        res.status(400).send({
+            errorCode: 400,
+            message: err
+        });
+    });
+};
+
 module.exports = {
     sendTimestamp: sendTimestamp,
-    listTimestamps: listTimestamps
+    listTimestamps: listTimestamps,
+    loadTimestamp: loadTimestamp
 };
