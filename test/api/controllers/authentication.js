@@ -274,7 +274,7 @@ describe('controllers', function() {
   });
 
   describe('query-timestamp', function() {
-    
+
     describe('POST /authentication/data/{userId}', function() {
       
       const _userCredentials = { username: 'SERaaS4', password: 'MyPassword' };
@@ -530,32 +530,110 @@ describe('controllers', function() {
     });
 
     describe('GET /authentication/data/{userId}/{queryId}', function() {
+
+      const _userCredentials = { username: 'SERaaS6', password: 'MyPassword' };
+
+      // Storing the user and query ID of the created user/timestamp to test the endpoint
+      let _userId = '',
+        _queryId = '';
+
+      // Add a user account and a timestamp before all of the tests
+      before(function(done) {
+        return request(server)
+        .post('/authentication/register')
+        .send(_userCredentials)
+        .end(function(err, res) {
+          _userId = res.body._id;
+          
+          return request(server)
+          .post(`/authentication/data/${_userId}`)
+          .send({
+            fileName: 'myFakeAudioFile.wav',
+            output: [{ emotion: 'happy', probability: 0.72135554771 }]
+          })
+          .end(function(err, res) {
+            _queryId = res.body._id;
+
+            done();
+          })
+        });
+      });
+
+      // Remove the user account and its timestamps after all of the tests
+      after(function(done) {
+        return Timestamp.deleteMany({ userId: _userId })
+        .then(function() {
+
+          return User.deleteOne({ name: _userCredentials.username })
+          .then(function() {
+            done();
+          });
+        });
+      });
+
       it('should be able to load the SERaaS Query for the user', function(done) {
-        done();
+        request(server)
+          .get(`/authentication/data/${_userId}/${_queryId}`)
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end(function(err, res) {
+            if (err) { done(new Error(err)); }
+            else { done(); }
+          });
       });
 
       it('should give error if no user exists with given user ID', function(done) {
-        done();
+        request(server)
+          .get(`/authentication/data/${new ObjectId()}/${_queryId}`)
+          .expect('Content-Type', /json/)
+          .expect(404)
+          .end(function(err, res) {
+            if (err) { done(new Error(err)); }
+            else { done(); }
+          });
       });
 
       it('should give error if given user ID is invalid string', function(done) {
-        done();
+        request(server)
+          .get(`/authentication/data/mannen/${_queryId}`)
+          .expect('Content-Type', /json/)
+          .expect(400)
+          .end(function(err, res) {
+            if (err) { done(new Error(err)); }
+            else { done(); }
+          });
       });
       
       it('should give error if no user ID given', function(done) {
-        done();
+        request(server)
+          .get(`/authentication/data//${_queryId}`)
+          .expect(404)
+          .end(function(err, res) {
+            if (err) { done(new Error(err)); }
+            else { done(); }
+          });
       });
 
       it('should give error if no query exist with given query ID', function(done) {
-        done();
+        request(server)
+          .get(`/authentication/data/${_userId}/${new ObjectId()}`)
+          .expect('Content-Type', /json/)
+          .expect(404)
+          .end(function(err, res) {
+            if (err) { done(new Error(err)); }
+            else { done(); }
+          });
       });
 
       it('should give error if given query ID is invalid string', function(done) {
-        done();
-      });
-
-      it('should give error if no query ID given', function(done) {
-        done();
+        request(server)
+          .get(`/authentication/data/${_userId}/kvinnen`)
+          .expect('Content-Type', /json/)
+          .expect(400)
+          .end(function(err, res) {
+            if (err) { done(new Error(err)); }
+            else { done(); }
+          });
       });
     });
   });
