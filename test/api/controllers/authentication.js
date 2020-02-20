@@ -271,7 +271,10 @@ describe('controllers', function() {
           });
       });
     });
+  });
 
+  describe('query-timestamp', function() {
+    
     describe('POST /authentication/data/{userId}', function() {
       
       const _userCredentials = { username: 'SERaaS4', password: 'MyPassword' };
@@ -525,6 +528,35 @@ describe('controllers', function() {
           });
       });
     });
-  });
 
+    describe('GET /authentication/data/{userId}/{queryId}', function() {
+      it('should be able to load the SERaaS Query for the user', function(done) {
+        done();
+      });
+
+      it('should give error if no user exists with given user ID', function(done) {
+        done();
+      });
+
+      it('should give error if given user ID is invalid string', function(done) {
+        done();
+      });
+      
+      it('should give error if no user ID given', function(done) {
+        done();
+      });
+
+      it('should give error if no query exist with given query ID', function(done) {
+        done();
+      });
+
+      it('should give error if given query ID is invalid string', function(done) {
+        done();
+      });
+
+      it('should give error if no query ID given', function(done) {
+        done();
+      });
+    });
+  });
 });
