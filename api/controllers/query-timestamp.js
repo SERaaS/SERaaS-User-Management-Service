@@ -95,6 +95,55 @@ function sendTimestamp(req, res) {
     });
 };
 
+// List all of the SERaaS Query Timestamp IDs for the given user
+function listTimestamps(req, res) {
+    const _userId = req.swagger.params.userId.value;
+
+    // User ID must be a valid one before performing the other expensive operations
+    if (!ObjectId.isValid(_userId)) {
+        return res.status(400).send({
+            errorCode: 400,
+            message: 'Given user ID must be a valid id string.'
+        });
+    };
+
+    // Ensuring the given user ID corresponds to a user
+    return User.findById(_userId)
+    .then(function(user) {
+
+        if (!user) {
+            return res.status(404).send({
+                errorCode: 404,
+                message: 'Given user ID does not associate with any user in the database.'
+            });
+        };
+
+        // Search for all timestamps associated with the user, only output the id to prevent overload
+        return Timestamp.find({ userId: _userId }, { _id: 1 })
+        .then(function(result) {
+            let timestamps = [];
+            
+            // Wrap as an array of ids
+            // e.g. [{ _id: 'id1' }, { _id: 'id2' }] -> ['id1', 'id2']
+            result.forEach(function(idObj) {
+                timestamps.push(idObj._id);
+            });
+
+            res.status(200).send(timestamps);
+        });
+    })
+    .catch(function(err) {
+        // Debug error if caused
+        console.log(err);
+
+        res.status(400).send({
+            errorCode: 400,
+            message: err
+        });
+    })
+};
+
 module.exports = {
-    sendTimestamp: sendTimestamp
+    sendTimestamp: sendTimestamp,
+    listTimestamps: listTimestamps
 };
