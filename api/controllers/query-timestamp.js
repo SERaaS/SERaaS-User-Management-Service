@@ -202,8 +202,47 @@ function loadTimestamp(req, res) {
     });
 };
 
+// "Secret" key to use the API endpoint to flush SERaaS Query Timestamps below.
+const FLUSH_SECRET_KEY = 'Imicrowavecereal'
+
+// Removes all SERaaS Query Timestamps that are more than 24 hours old
+function flushTimestamps(req, res) {
+
+    const _secretKey = req.swagger.params.secretKey.value;
+
+    if (_secretKey !== FLUSH_SECRET_KEY) {
+        return res.status(403).send({
+            errorCode: 403,
+            message: 'Invalid secret key provided to use this API endpoint.'
+        })
+    };
+    
+    // A Day Ago = 24 Hours
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    // Delete all timestamps created less than a day ago
+    return Timestamp.deleteMany({ dateCreated: { $lt: yesterday } })
+    .then(function(result) {
+        console.log(result);
+
+        // Show number of timestamps removed as result
+        // e.g. { removedTimestamps: 1 }
+        res.status(200).send({
+            removedTimestamps: result.deletedCount
+        });
+    })
+    .catch(function(err) {
+        // Debug error if caused
+        console.log(err);
+
+        res.status(400).send(err);
+    });
+};
+
 module.exports = {
     sendTimestamp: sendTimestamp,
     listTimestamps: listTimestamps,
-    loadTimestamp: loadTimestamp
+    loadTimestamp: loadTimestamp,
+    flushTimestamps: flushTimestamps
 };
