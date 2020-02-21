@@ -117,6 +117,12 @@ definitions:
     type: array
     items:
       type: string
+  SERaaSFlushOutput:
+    required:
+      - removedTimestamps
+    properties:
+      removedTimestamps:
+        type: number
 paths:
   /swagger:
     x-swagger-pipe: swagger_raw
@@ -249,6 +255,28 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/SERaaSQueryOutput"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /authentication/flushdata/{secretKey}:
+    x-swagger-router-controller: query-timestamp
+    get:
+      description: |
+        Removes all of the SERaaS API Query Timestamps that are 
+        more than 24 hours old from the database
+      operationId: flushTimestamps
+      parameters:
+        - in: path
+          name: secretKey
+          description: The (not so) secret key provided in the API to use this endpoint
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/SERaaSFlushOutput"
         default:
           description: Error
           schema:
