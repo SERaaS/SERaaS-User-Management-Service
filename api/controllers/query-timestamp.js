@@ -56,6 +56,7 @@ function sendTimestamp(req, res) {
         const newTimestamp = new Timestamp({
             userId: _userId,
             fileName: _fileName,
+            dateCreated: new Date(),
             output: _output
         });
 

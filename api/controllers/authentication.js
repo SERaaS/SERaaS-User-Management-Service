@@ -57,7 +57,8 @@ function register(req, res) {
 
             const newUser = new User({
                 name: username,
-                password: hash
+                password: hash,
+                dateCreated: new Date()
             });
 
             return newUser.save()
