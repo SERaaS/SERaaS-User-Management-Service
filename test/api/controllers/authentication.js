@@ -1,10 +1,10 @@
 const should = require('should'),
-    request = require('supertest'),
-    server = require('../../../app'),
-    User = require('../../../api/models/User'),
+  request = require('supertest'),
+  server = require('../../../app'),
+  User = require('../../../api/models/User'),
 
-    // Used to construct a random ObjectID to validate user ID related API endpoints
-    ObjectId = require('mongoose').Types.ObjectId;
+  // Used to construct a random ObjectID to validate user ID related API endpoints
+  ObjectId = require('mongoose').Types.ObjectId;
 
 describe('controllers', function() {
 
@@ -51,14 +51,14 @@ describe('controllers', function() {
           .end(function(err, res) {
 
             request(server)
-            .post('/authentication/register')
-            .send(_userCredentials)
-            .expect('Content-Type', /json/)
-            .expect(409)
-            .end(function(err, res) {
-              if (err) { done(new Error(err)); }
-              else { done(); }
-            });
+              .post('/authentication/register')
+              .send(_userCredentials)
+              .expect('Content-Type', /json/)
+              .expect(409)
+              .end(function(err, res) {
+                if (err) { done(new Error(err)); }
+                else { done(); }
+              });
           });
       });
 
@@ -130,11 +130,11 @@ describe('controllers', function() {
       // Add a user account before all of the tests
       before(function(done) {
         return request(server)
-        .post('/authentication/register')
-        .send(_userCredentials)
-        .end(function(err, res) {
-          done();
-        });
+          .post('/authentication/register')
+          .send(_userCredentials)
+          .end(function(err, res) {
+            done();
+          });
       });
 
       // Remove the user account after all of the tests
@@ -205,12 +205,12 @@ describe('controllers', function() {
       // Add a user account before all of the tests
       before(function(done) {
         return request(server)
-        .post('/authentication/register')
-        .send(_userCredentials)
-        .end(function(err, res) {
-          _userId = res.body._id;
-          done();
-        });
+          .post('/authentication/register')
+          .send(_userCredentials)
+          .end(function(err, res) {
+            _userId = res.body._id;
+            done();
+          });
       });
 
       // Remove the user account after all of the tests

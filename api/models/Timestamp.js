@@ -1,26 +1,26 @@
 const mongoose = require('mongoose'),
-    Schema = mongoose.Schema;
+  Schema = mongoose.Schema;
 
-// Timestamp query object, stores data relating to a single API call from a user
+// Timestamp query object, stores data relating to a single SERaaS API call from a user
 const timestampSchema = Schema(
-    {
-        userId: { type: mongoose.SchemaTypes.ObjectId, required: true },
-        fileName: { type: String, required: true },
-        
-        // Query date
-        dateCreated: { type: Date, default: new Date() },
+  {
+    userId: { type: mongoose.SchemaTypes.ObjectId, required: true },
+    fileName: { type: String, required: true },
+    
+    // Query date
+    dateCreated: { type: Date, default: new Date() },
 
-        // Parameters of the API endpoint used
-        paramEmotionsAvailable: [{ type: String, default: 'all' }],
-        paramPeriodicQuery: { type: Number, default: -1 },
+    // Parameters of the API endpoint used
+    paramEmotionsAvailable: [{ type: String, default: 'all' }],
+    paramPeriodicQuery: { type: Number, default: -1 },
 
-        // Resulting output
-        output: {}
-    },
+    // Resulting output
+    output: {}
+  },
 
-    {
-        collection: 'timestampsDB'
-    }
+  {
+    collection: 'timestampsDB'
+  }
 );
 
 // Allowing efficient querying by setting what fields to query using
