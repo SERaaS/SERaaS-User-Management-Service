@@ -105,3 +105,6 @@ dist
 
 # MongoDB Connectivity Credentials
 mongodb-connectivity-uri.js
+
+# Other
+api/controllers/flushKey.js

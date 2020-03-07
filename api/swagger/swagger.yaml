@@ -1,9 +1,9 @@
 swagger: "2.0"
 info:
   version: "0.0.1"
-  title: User Authentication Microservice
+  title: User Management Service
 # during dev, should point to your local machine
-host: localhost:10010
+host: localhost:4000
 # basePath prefixes all resource paths 
 basePath: /
 # 
@@ -19,16 +19,13 @@ produces:
   - application/json
 # complex objects have schema definitions
 definitions:
-  HelloWorldResponse:
-    required:
-      - message
-    properties:
-      message:
-        type: string
   ErrorResponse:
     required:
+      - errorCode
       - message
     properties:
+      errorCode:
+        type: number
       message:
         type: string
   UserAuthenticationResponse:
@@ -48,7 +45,7 @@ definitions:
       lastUsed:
         type: string
         format: date-time
-  UserAuthenticationInput:
+  UserAuthenticationRequest:
     required:
       - username
       - password
@@ -58,31 +55,73 @@ definitions:
       password:
         type: string
         format: password
+  UserValidationResponse:
+    required:
+      - userExists
+    properties:
+      userExists:
+        type: boolean
+  EmotionStatisticObject:
+    required:
+      - emotion
+      - probability
+    properties:
+      emotion:
+        type: string
+      probability:
+        type: number
+  # Both request and response for SERaaS Timestamps are similar as the required attributes are different
+  SERaaSTimestampRequest:
+    required:
+      - fileName
+      - output
+    properties:
+      fileName:
+        type: string
+      paramEmotionsAvailable:
+        type: array
+        items:
+          type: string
+      paramPeriodicQuery:
+        type: number
+      output:
+        type: array
+        items:
+          $ref: "#/definitions/EmotionStatisticObject"
+  SERaaSTimestampResponse:
+    required:
+      - userId
+      - fileName
+      - dateCreated
+    properties:
+      userId:
+        type: string
+      fileName:
+        type: string
+      dateCreated:
+        type: string
+        format: date-time
+      paramEmotionsAvailable:
+        type: array
+        items:
+          type: string
+      paramPeriodicQuery:
+        type: number
+      output:
+        type: array
+        items:
+          $ref: "#/definitions/EmotionStatisticObject"
+  SERaaSTimestampList:
+    type: array
+    items:
+      type: string
+  SERaaSFlushOutput:
+    required:
+      - removedTimestamps
+    properties:
+      removedTimestamps:
+        type: number
 paths:
-  # /authentication:
-    # binds a127 app logic to a route
-    # x-swagger-router-controller: authentication
-    # get:
-      # description: Returns 'Hello' to the caller
-      # used as the method name of the controller
-      # operationId: register
-      # parameters:
-      #   - name: name
-      #     in: query
-      #     description: The name of the person to whom to say hello
-      #     required: false
-      #     type: string
-      # responses:
-        # "200":
-          # description: Success
-          # schema:
-            # a pointer to a definition
-            # $ref: "#/definitions/HelloWorldResponse"
-        # responses may fall through to errors
-        # default:
-        #   description: Error
-        #   schema:
-        #     $ref: "#/definitions/ErrorResponse"
   /swagger:
     x-swagger-pipe: swagger_raw
   /authentication/register:
@@ -96,7 +135,7 @@ paths:
           description: The username and password of the account to register
           required: true
           schema:
-            $ref: "#/definitions/UserAuthenticationInput"
+            $ref: "#/definitions/UserAuthenticationRequest"
       responses:
         "200":
           description: Success
@@ -117,12 +156,125 @@ paths:
           description: The username and password of the account to authenticate
           required: true
           schema:
-            $ref: "#/definitions/UserAuthenticationInput"
+            $ref: "#/definitions/UserAuthenticationRequest"
       responses:
         "200":
           description: Success
           schema:
             $ref: "#/definitions/UserAuthenticationResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /authentication/validate/{userId}:
+    x-swagger-router-controller: authentication
+    get:
+      description: Validates if the given user ID is associated with a registered account
+      operationId: validateUserId
+      parameters:
+        - in: path
+          name: userId
+          description: The user ID to validate
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/UserValidationResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /authentication/data/{userId}:
+    x-swagger-router-controller: timestamp
+    get:
+      description: Gets the list of SERaaS API Timestamps associated with the given user
+      operationId: listTimestamps
+      parameters:
+        - in: path
+          name: userId
+          description: The user ID of the user to associate data with
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/SERaaSTimestampList"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      description: Send SERaaS API call data upon usage and associate it with the given user as a Timestamp object
+      operationId: sendTimestamp
+      parameters:
+        - in: path
+          name: userId
+          description: The user ID of the user to associate data with
+          required: true
+          type: string
+        - in: body
+          name: data
+          description: The SERaaS API call data to be stored to the user
+          required: true
+          schema:
+            $ref: "#/definitions/SERaaSTimestampRequest"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/SERaaSTimestampResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /authentication/data/{userId}/{queryId}:
+    x-swagger-router-controller: timestamp
+    get:
+      description: |
+        Loads all the data related to the given SERaaS API 
+        call (Timestamp) associated with the given user
+      operationId: loadTimestamp
+      parameters:
+        - in: path
+          name: userId
+          description: The user ID of the user to associate data with
+          required: true
+          type: string
+        - in: path
+          name: queryId
+          description: The ID of the Timestamp to load
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/SERaaSTimestampResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /authentication/flushdata/{secretKey}:
+    x-swagger-router-controller: timestamp
+    get:
+      description: |
+        Removes all of the SERaaS API calls (Timestamps) that are 
+        more than 24 hours old from the database
+      operationId: flushTimestamps
+      parameters:
+        - in: path
+          name: secretKey
+          description: The secret key provided in the API to use this endpoint
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/SERaaSFlushOutput"
         default:
           description: Error
           schema:
