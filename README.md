@@ -2,7 +2,7 @@
 
 Node.js Web API service for handling generic user authentication and storage requirements for Speech Emotion Recognition as a Service (SERaaS).
 
-SERaaS is a Final Year Project for [Waterford Institute of Technology](https://www.wit.ie/) developed by [Wei Kit Wong](https://github.com/andyAndyA), which aims to provide a Speech Emotion Recognition as a Web API service. To use the service, a client must register for an user account via the [Web Platform](https://github.com/andyAndyA/SERaaS-Web-Platform), which is integrated with this User Management Service to provide registration and authentication for both the web platform and the main SERaaS API. In addition to user account management, SERaaS' API calls data are stored as Timestamps in this Web API service, which is used for visualising usage history data from the web platform.
+SERaaS is a Final Year Project for [Waterford Institute of Technology](https://www.wit.ie/) developed by [Wei Kit Wong](https://github.com/andyAndyA), which aims to provide a Speech Emotion Recognition as a Web API service. To use the service, a client must register for an user account via the [Web Platform](https://github.com/SERaaS/SERaaS-Web-Platform), which is integrated with this User Management Service to provide registration and authentication for both the web platform and the main SERaaS API. In addition to user account management, SERaaS' API calls data are stored as Timestamps in this Web API service, which is used for visualising usage history data from the web platform.
 
 ## General
 
