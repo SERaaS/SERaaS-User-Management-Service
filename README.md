@@ -8,7 +8,7 @@ SERaaS is a Final Year Project for [Waterford Institute of Technology](https://w
 
 ### Technologies Used
 
-* *Node.js* - JavaScript Runtime
+* *Node.js (v10.19.0)* - JavaScript Runtime
 * *Swagger.js* - Node.js API Development Tool
 * *MongoDB* - Database storage solution
 * *Mongoose.js* - Middleware for simplifying MongoDB interaction
